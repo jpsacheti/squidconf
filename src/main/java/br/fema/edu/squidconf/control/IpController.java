@@ -6,6 +6,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController("/ip")
 public class IpController {
+    private final SquidFileRepo squidFileRepo;
+
     @Autowired
-    private SquidFileRepo squidFileRepo;
+    public IpController(SquidFileRepo squidFileRepo) {
+        this.squidFileRepo = squidFileRepo;
+    }
 }

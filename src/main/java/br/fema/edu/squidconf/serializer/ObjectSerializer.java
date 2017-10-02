@@ -2,6 +2,7 @@ package br.fema.edu.squidconf.serializer;
 
 import br.fema.edu.squidconf.repository.SquidFileRepo;
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@Component
 public class ObjectSerializer {
     private static final Path confFile = Paths.get("state.srlz");
 
@@ -21,12 +23,11 @@ public class ObjectSerializer {
         }
     }
 
-    @Bean("serialized")
+    @Bean
     public synchronized static SquidFileRepo read() {
         if (Files.exists(confFile)) {
             try (ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(confFile))) {
-                SquidFileRepo squidFileRepo = (SquidFileRepo) ois.readObject();
-                return squidFileRepo;
+                return (SquidFileRepo) ois.readObject();
             } catch (IOException | ClassNotFoundException ioe) {
                 ioe.printStackTrace();
             }
