@@ -1,7 +1,7 @@
 package br.fema.edu.squidconf.control;
 
 import br.fema.edu.squidconf.model.CacheSize;
-import br.fema.edu.squidconf.repository.SquidFileRepo;
+import br.fema.edu.squidconf.serializer.SquidFileRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,33 +1,29 @@
-package br.fema.edu.squidconf.repository;
+package br.fema.edu.squidconf.serializer;
 
 import br.fema.edu.squidconf.model.AuthUser;
 import br.fema.edu.squidconf.model.CacheSize;
-import br.fema.edu.squidconf.model.SquidRule;
+import br.fema.edu.squidconf.model.TimeRule;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.context.annotation.ApplicationScope;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Optional;
+import java.util.Set;
 
 @ApplicationScope
 @Repository
 public class SquidFileRepo implements Serializable {
-    private final List<SquidRule> squidRules = new ArrayList<>();
     private final Set<String> whiteListUrl = new LinkedHashSet<>();
     private final Set<String> blackListUrl = new LinkedHashSet<>();
     private final Set<String> blackListExtension = new LinkedHashSet<>();
     private final Set<AuthUser> users = new LinkedHashSet<>();
+    private final Set<String> whiteListIp = new LinkedHashSet<>();
+    private final Set<String> blackListIp = new LinkedHashSet<>();
+    private final Set<TimeRule> timeRules = new LinkedHashSet<>();
+    private boolean allowEverything;
     private CacheSize cacheSize;
 
-    public synchronized void addRule(SquidRule squidRule) {
-        if (!squidRules.contains(squidRule)) {
-            squidRules.add(squidRule);
-        }
-    }
-
-    public synchronized boolean removeRule(SquidRule squidRule) {
-        return squidRules.remove(squidRule);
-    }
 
     public synchronized void addWhiteList(String url) {
         whiteListUrl.add(url);
@@ -61,11 +57,63 @@ public class SquidFileRepo implements Serializable {
         return users.remove(auth);
     }
 
+    public synchronized void addWhitelistIp(String ip) {
+        whiteListIp.add(ip);
+    }
+
+    public synchronized boolean removeWhitelistIp(String ip) {
+        return whiteListIp.remove(ip);
+    }
+
+    public synchronized void addTimeRule(TimeRule timeRule) {
+        timeRules.add(timeRule);
+    }
+
+    public synchronized boolean removeTimeRule(TimeRule timeRule) {
+        return timeRules.remove(timeRule);
+    }
+
     public Optional<CacheSize> getCacheSize() {
         return Optional.ofNullable(cacheSize);
     }
 
     public void setCacheSize(CacheSize cacheSize) {
         this.cacheSize = cacheSize;
+    }
+
+    boolean isAllowEverything() {
+        return allowEverything;
+    }
+
+    public void setAllowEverything(boolean allowEverything) {
+        this.allowEverything = allowEverything;
+    }
+
+    Set<String> getWhiteListUrl() {
+        return whiteListUrl;
+    }
+
+    Set<String> getBlackListUrl() {
+        return blackListUrl;
+    }
+
+    Set<String> getBlackListExtension() {
+        return blackListExtension;
+    }
+
+    Set<AuthUser> getUsers() {
+        return users;
+    }
+
+    Set<String> getWhiteListIp() {
+        return whiteListIp;
+    }
+
+    Set<String> getBlackListIp() {
+        return blackListIp;
+    }
+
+    Set<TimeRule> getTimeRules() {
+        return timeRules;
     }
 }

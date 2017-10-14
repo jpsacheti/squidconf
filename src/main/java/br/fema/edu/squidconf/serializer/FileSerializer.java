@@ -1,7 +1,6 @@
 package br.fema.edu.squidconf.serializer;
 
 import br.fema.edu.squidconf.model.CacheSize;
-import br.fema.edu.squidconf.repository.SquidFileRepo;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.stream.Collectors;
 
 import static java.text.MessageFormat.format;
 
@@ -32,5 +32,41 @@ public class FileSerializer {
         writer.println("cache_swap_high 95");
         writer.println("cache_dir ufs /var/spool/squid3 256 10 128");
         writer.println("cache_access_log /var/log/squid3/access.log");
+        if (squidFileRepo.isAllowEverything()) {
+            writer.println("acl libera_geral src all");
+            writer.println("http_access allow libera_geral");
+            writer.println("acl blacklist url_regex -i ");
+            writer.println("http_access deny blacklist \"/etc/squid3/bloqueados\"");
+        } else {
+            writer.println("acl whitelist url_regex –i \"/etc/squid3/liberados\"");
+            writer.println("http_access deny all");
+            writer.println("http_access allow whitelist");
+        }
+        String ipsBloqueados = squidFileRepo.getBlackListIp().stream().collect(Collectors.joining(" "));
+        if (!ipsBloqueados.isEmpty()) {
+            writer.println("acl ipbloqueado dst " + ipsBloqueados);
+            writer.println("http_access  deny ipbloqueado");
+        }
+        String ipsAceitos = squidFileRepo.getWhiteListIp().stream().collect(Collectors.joining(" "));
+        if (!ipsAceitos.isEmpty()) {
+            writer.println("acl ipaceito src " + ipsAceitos);
+            writer.println("http_access allow ipaceito");
+        }
+        writer.println("acl ext_bloq url_regex -i \"/etc/squid3/extbloq\"");
+        writeBlackListUrl(squidFileRepo);
+        writeWhiteListUrl(squidFileRepo);
+        writeExtensionBlock(squidFileRepo);
+    }
+
+    private static void writeExtensionBlock(SquidFileRepo squidFileRepo) {
+
+    }
+
+    private static void writeWhiteListUrl(SquidFileRepo squidFileRepo) {
+
+    }
+
+    private static void writeBlackListUrl(SquidFileRepo squidFileRepo) {
+
     }
 }

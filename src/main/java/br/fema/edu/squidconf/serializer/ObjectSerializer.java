@@ -1,6 +1,5 @@
 package br.fema.edu.squidconf.serializer;
 
-import br.fema.edu.squidconf.repository.SquidFileRepo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
