@@ -116,4 +116,6 @@ public class SquidFileRepo implements Serializable {
     Set<TimeRule> getTimeRules() {
         return timeRules;
     }
+
+
 }

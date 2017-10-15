@@ -58,15 +58,25 @@ public class FileSerializer {
         writeExtensionBlock(squidFileRepo);
     }
 
-    private static void writeExtensionBlock(SquidFileRepo squidFileRepo) {
-
+    private static void writeExtensionBlock(SquidFileRepo squidFileRepo) throws IOException {
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid3/extbloq"),
+                StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))) {
+            squidFileRepo.getBlackListExtension()
+                    .stream()
+                    .map(ext -> String.format("\\%s$", ext))
+                    .forEach(writer::println);
+        }
     }
 
-    private static void writeWhiteListUrl(SquidFileRepo squidFileRepo) {
-
+    private static void writeWhiteListUrl(SquidFileRepo squidFileRepo) throws IOException {
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid3/bloqueados"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))) {
+            squidFileRepo.getWhiteListUrl().forEach(writer::println);
+        }
     }
 
-    private static void writeBlackListUrl(SquidFileRepo squidFileRepo) {
-
+    private static void writeBlackListUrl(SquidFileRepo squidFileRepo) throws IOException {
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid3/liberados"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))) {
+            squidFileRepo.getBlackListUrl().forEach(writer::println);
+        }
     }
 }
