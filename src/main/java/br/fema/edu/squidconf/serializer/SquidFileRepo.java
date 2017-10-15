@@ -3,6 +3,7 @@ package br.fema.edu.squidconf.serializer;
 import br.fema.edu.squidconf.model.AuthUser;
 import br.fema.edu.squidconf.model.CacheSize;
 import br.fema.edu.squidconf.model.TimeRule;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.context.annotation.ApplicationScope;
 
@@ -56,12 +57,20 @@ public class SquidFileRepo implements Serializable {
         return users.remove(auth);
     }
 
-    public synchronized void addWhitelistIp(String ip) {
+    public synchronized void addWhitelistIp(@NotNull String ip) {
         whiteListIp.add(ip);
     }
 
     public synchronized boolean removeWhitelistIp(String ip) {
         return whiteListIp.remove(ip);
+    }
+
+    public synchronized void addBlacklistIp(String ip) {
+        blackListIp.add(ip);
+    }
+
+    public synchronized boolean removeBlacklistIp(String ip) {
+        return blackListIp.remove(ip);
     }
 
     public synchronized void addTimeRule(TimeRule timeRule) {
