@@ -24,7 +24,6 @@ public class SquidFileRepo implements Serializable {
     private boolean allowEverything;
     private CacheSize cacheSize;
 
-
     public synchronized void addWhiteList(String url) {
         whiteListUrl.add(url);
     }
@@ -89,31 +88,31 @@ public class SquidFileRepo implements Serializable {
         this.allowEverything = allowEverything;
     }
 
-    Set<String> getWhiteListUrl() {
+    public Set<String> getWhiteListUrl() {
         return whiteListUrl;
     }
 
-    Set<String> getBlackListUrl() {
+    public Set<String> getBlackListUrl() {
         return blackListUrl;
     }
 
-    Set<String> getBlackListExtension() {
+    public Set<String> getBlackListExtension() {
         return blackListExtension;
     }
 
-    Set<AuthUser> getUsers() {
+    public Set<AuthUser> getUsers() {
         return users;
     }
 
-    Set<String> getWhiteListIp() {
+    public Set<String> getWhiteListIp() {
         return whiteListIp;
     }
 
-    Set<String> getBlackListIp() {
+    public Set<String> getBlackListIp() {
         return blackListIp;
     }
 
-    Set<TimeRule> getTimeRules() {
+    public Set<TimeRule> getTimeRules() {
         return timeRules;
     }
 
