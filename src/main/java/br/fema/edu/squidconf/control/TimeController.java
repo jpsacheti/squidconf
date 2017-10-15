@@ -1,48 +1,45 @@
 package br.fema.edu.squidconf.control;
 
-import br.fema.edu.squidconf.model.AuthUser;
+import br.fema.edu.squidconf.model.TimeRule;
 import br.fema.edu.squidconf.serializer.FileSerializer;
 import br.fema.edu.squidconf.serializer.SquidFileRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
-@RestController("/user")
-public class AuthUserController {
+@RestController("/time")
+public class TimeController {
     private final SquidFileRepo squidFileRepo;
 
     @Autowired
-    public AuthUserController(SquidFileRepo squidFileRepo) {
+    public TimeController(SquidFileRepo squidFileRepo) {
         this.squidFileRepo = squidFileRepo;
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> add(AuthUser user) {
-        squidFileRepo.addAuthUser(user);
+    public ResponseEntity<?> add(TimeRule ext) {
+        squidFileRepo.addTimeRule(ext);
         FileSerializer.writeConfiguration(squidFileRepo);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping
-    public Map<Integer, String> list() {
-        return squidFileRepo.getUsers()
-                .stream()
-                .collect(Collectors.toMap(AuthUser::getCodigo, AuthUser::getUsername));
+    @GetMapping("/list")
+    public Set<String> list() {
+        return squidFileRepo.getBlackListExtension();
     }
 
-    @PostMapping("/remove/{codigo}")
-    public ResponseEntity<?> remove(@PathVariable Integer codigo) {
-        boolean result = squidFileRepo.removeAuthUser(codigo);
+    @GetMapping("/remove/{id}")
+    public ResponseEntity<?> remove(@PathVariable String id) {
+        boolean result = squidFileRepo.removeTimeRule(id);
         FileSerializer.writeConfiguration(squidFileRepo);
         return result ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/flush")
     public ResponseEntity<?> flush() {
-        squidFileRepo.getUsers().clear();
+        squidFileRepo.getTimeRules().clear();
         FileSerializer.writeConfiguration(squidFileRepo);
         return ResponseEntity.ok().build();
     }

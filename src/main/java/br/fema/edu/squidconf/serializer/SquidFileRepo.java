@@ -53,8 +53,8 @@ public class SquidFileRepo implements Serializable {
         users.add(auth);
     }
 
-    public synchronized boolean removeAuthUser(AuthUser auth) {
-        return users.remove(auth);
+    public synchronized boolean removeAuthUser(int codigo) {
+        return users.removeIf(au -> au.getCodigo() == codigo);
     }
 
     public synchronized void addWhitelistIp(@NotNull String ip) {
@@ -77,8 +77,8 @@ public class SquidFileRepo implements Serializable {
         timeRules.add(timeRule);
     }
 
-    public synchronized boolean removeTimeRule(TimeRule timeRule) {
-        return timeRules.remove(timeRule);
+    public synchronized boolean removeTimeRule(String nome) {
+        return timeRules.removeIf(tr -> tr.getNome().equals(nome));
     }
 
     public Optional<CacheSize> getCacheSize() {

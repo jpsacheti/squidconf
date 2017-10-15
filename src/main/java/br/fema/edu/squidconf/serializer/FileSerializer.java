@@ -1,6 +1,7 @@
 package br.fema.edu.squidconf.serializer;
 
 import br.fema.edu.squidconf.model.CacheSize;
+import br.fema.edu.squidconf.nativ.ProcessRunner;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -22,49 +23,58 @@ public class FileSerializer {
 
     public static void writeConfiguration(SquidFileRepo squidFileRepo) {
 
-        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(SQUID_CONF_PATH,
+        try (PrintWriter printer = new PrintWriter(Files.newBufferedWriter(SQUID_CONF_PATH,
                 StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))) {
-            writer.println("http_port 3128");
-            writer.println("visible_hostname proxy.joaopedro.com.br");
+            printer.println("http_port 3128");
+            printer.println("visible_hostname proxy.joaopedro.com.br");
             CacheSize cache = squidFileRepo.getCacheSize().orElse(new CacheSize(128, 16));
-            writer.println(format("cache_mem {0} MB", cache.getMemoryCacheSize()));
-            writer.println(format("maximum_object_size_in_memory {0} MB", cache.getMemoryCacheSize()));
-            writer.println("maximum_object_size 128 MB");
-            writer.println("minimum_object_size 0 KB");
-            writer.println("cache_swap_low 90");
-            writer.println("cache_swap_high 95");
-            writer.println("cache_dir ufs /var/spool/squid3 256 10 128");
-            writer.println("cache_access_log /var/log/squid3/access.log");
+            printer.println(format("cache_mem {0} MB", cache.getMemoryCacheSize()));
+            printer.println(format("maximum_object_size_in_memory {0} MB", cache.getMemoryCacheSize()));
+            printer.println("maximum_object_size 128 MB");
+            printer.println("minimum_object_size 0 KB");
+            printer.println("cache_swap_low 90");
+            printer.println("cache_swap_high 95");
+            printer.println("cache_dir ufs /var/spool/squid3 256 10 128");
+            printer.println("cache_access_log /var/log/squid/access.log");
+            if (!squidFileRepo.getUsers().isEmpty()) {
+                ProcessRunner.writePasswords(squidFileRepo.getUsers());
+                printer.println("auth_param basic realm squid");
+                printer.println("auth_param basic program /usr/lib/squid3/basic_ncsa_auth  /etc/squid/squid_passwd");
+                printer.println("ACL AUTENTICADOS PROXY_AUTH REQUIRED");
+                printer.println("acl permitidos proxy_auth –i  \"/etc/squid/squid_passwd\"");
+                printer.println("http_access allow permitidos");
+            }
             if (squidFileRepo.isAllowEverything()) {
-                writer.println("acl libera_geral src all");
-                writer.println("http_access allow libera_geral");
-                writer.println("acl blacklist url_regex -i ");
-                writer.println("http_access deny blacklist \"/etc/squid3/bloqueados\"");
+                printer.println("acl libera_geral src all");
+                printer.println("http_access allow libera_geral");
+                printer.println("acl blacklist url_regex -i ");
+                printer.println("http_access deny blacklist \"/etc/squid/bloqueados\"");
             } else {
-                writer.println("acl whitelist url_regex –i \"/etc/squid3/liberados\"");
-                writer.println("http_access deny all");
-                writer.println("http_access allow whitelist");
+                printer.println("acl whitelist url_regex –i \"/etc/squid/liberados\"");
+                printer.println("http_access deny all");
+                printer.println("http_access allow whitelist");
             }
             String ipsBloqueados = squidFileRepo.getBlackListIp().stream().collect(Collectors.joining(" "));
             if (!ipsBloqueados.isEmpty()) {
-                writer.println("acl ipbloqueado dst " + ipsBloqueados);
-                writer.println("http_access  deny ipbloqueado");
+                printer.println("acl ipbloqueado dst " + ipsBloqueados);
+                printer.println("http_access  deny ipbloqueado");
             }
             String ipsAceitos = squidFileRepo.getWhiteListIp().stream().collect(Collectors.joining(" "));
             if (!ipsAceitos.isEmpty()) {
-                writer.println("acl ipaceito src " + ipsAceitos);
-                writer.println("http_access allow ipaceito");
+                printer.println("acl ipaceito src " + ipsAceitos);
+                printer.println("http_access allow ipaceito");
             }
             squidFileRepo.getTimeRules().forEach(tr -> {
                 DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm");
-                writer.println(String.format("acl %s time %s-%s", tr.getNome(), timeFormatter.format(tr.getBegin()), timeFormatter
+                printer.println(String.format("acl %s time %s-%s", tr.getNome(), timeFormatter.format(tr.getBegin()), timeFormatter
                         .format(tr.getEnd())));
             });
-            writer.println("acl ext_bloq url_regex -i \"/etc/squid3/extbloq\"");
+            printer.println("acl ext_bloq url_regex -i \"/etc/squid3/extbloq\"");
             writeBlackListUrl(squidFileRepo);
             writeWhiteListUrl(squidFileRepo);
             writeExtensionBlock(squidFileRepo);
             ObjectSerializer.write(squidFileRepo);
+            ProcessRunner.reloadSquid();
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
