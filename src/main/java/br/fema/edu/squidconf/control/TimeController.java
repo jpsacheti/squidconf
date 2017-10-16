@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
-@RestController("/time")
+@RestController
 public class TimeController {
     private final SquidFileRepo squidFileRepo;
 
@@ -18,26 +18,26 @@ public class TimeController {
         this.squidFileRepo = squidFileRepo;
     }
 
-    @PostMapping("/addtime")
+    @PostMapping("/time/add")
     public ResponseEntity<?> add(@RequestBody TimeRule ext) {
         squidFileRepo.addTimeRule(ext);
         FileSerializer.writeConfiguration(squidFileRepo);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/listtime")
+    @GetMapping("/time/list")
     public Set<String> list() {
         return squidFileRepo.getBlackListExtension();
     }
 
-    @GetMapping("/removetime/{id}")
+    @GetMapping("/time/remove/{id}")
     public ResponseEntity<?> remove(@PathVariable String id) {
         boolean result = squidFileRepo.removeTimeRule(id);
         FileSerializer.writeConfiguration(squidFileRepo);
         return result ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/flushtime")
+    @DeleteMapping("/time/flush")
     public ResponseEntity<?> flush() {
         squidFileRepo.getTimeRules().clear();
         FileSerializer.writeConfiguration(squidFileRepo);

@@ -95,13 +95,13 @@ public class FileSerializer {
     }
 
     private static void writeWhiteListUrl(SquidFileRepo squidFileRepo) throws IOException {
-        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid/bloqueados"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))) {
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid/liberados"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))) {
             squidFileRepo.getWhiteListUrl().forEach(writer::println);
         }
     }
 
     private static void writeBlackListUrl(SquidFileRepo squidFileRepo) throws IOException {
-        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid/liberados"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))) {
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid/bloqueados"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))) {
             squidFileRepo.getBlackListUrl().forEach(writer::println);
         }
     }

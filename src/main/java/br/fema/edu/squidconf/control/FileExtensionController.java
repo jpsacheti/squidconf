@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
-@RestController("/extensoes")
+@RestController
 public class FileExtensionController {
     private final SquidFileRepo squidFileRepo;
 
@@ -17,7 +17,7 @@ public class FileExtensionController {
         this.squidFileRepo = squidFileRepo;
     }
 
-    @PostMapping("/addext")
+    @PostMapping("/ext/add")
     public ResponseEntity<?> addExtensao(@RequestBody String ext) {
         ext = ext.startsWith("\\.") ? ext : "." + ext;
         squidFileRepo.addFileExtension(ext);
@@ -25,19 +25,19 @@ public class FileExtensionController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/listext")
+    @GetMapping("/ext/list")
     public Set<String> listExtensao() {
         return squidFileRepo.getBlackListExtension();
     }
 
-    @PostMapping("/removeext")
+    @PostMapping("/ext/remove")
     public ResponseEntity<?> removeExtensao(@RequestBody String fex) {
         boolean result = squidFileRepo.removeFileExtension(fex);
         FileSerializer.writeConfiguration(squidFileRepo);
         return result ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/flushext")
+    @DeleteMapping("/ext/flush")
     public ResponseEntity<?> flushExtensao() {
         squidFileRepo.getBlackListExtension().clear();
         FileSerializer.writeConfiguration(squidFileRepo);

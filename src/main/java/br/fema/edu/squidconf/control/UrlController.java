@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
-@RestController("/url")
+@RestController
 public class UrlController {
     private final SquidFileRepo squidFileRepo;
 
@@ -17,52 +17,52 @@ public class UrlController {
         this.squidFileRepo = squidFileRepo;
     }
 
-    @PostMapping("/blacklist/add")
+    @PostMapping("/url/blacklist/add")
     public ResponseEntity<?> addBlackList(@RequestBody String regexUrl) {
         squidFileRepo.addBlackList(regexUrl);
         FileSerializer.writeConfiguration(squidFileRepo);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/blacklist/list")
+    @GetMapping("/url/blacklist/list")
     public Set<String> listBlackList() {
         return squidFileRepo.getBlackListUrl();
     }
 
-    @PostMapping("/blacklist/remove")
+    @PostMapping("/url/blacklist/remove")
     public ResponseEntity<?> removeBlackList(@RequestBody String regexUrl) {
         boolean result = squidFileRepo.removeBlackList(regexUrl);
         FileSerializer.writeConfiguration(squidFileRepo);
         return result ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/blacklist/flush")
+    @DeleteMapping("/url/blacklist/flush")
     public ResponseEntity<?> flushBlackList() {
         squidFileRepo.getBlackListUrl().clear();
         FileSerializer.writeConfiguration(squidFileRepo);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/whitelist/add")
-    public ResponseEntity<?> addWhiteList(String regexUrl) {
+    @PostMapping("/url/whitelist/add")
+    public ResponseEntity<?> addWhiteList(@RequestBody String regexUrl) {
         squidFileRepo.addWhiteList(regexUrl);
         FileSerializer.writeConfiguration(squidFileRepo);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/whitelist/list")
+    @GetMapping("/url/whitelist/list")
     public Set<String> listWhiteList() {
         return squidFileRepo.getWhiteListUrl();
     }
 
-    @PostMapping("/whitelist/remove")
+    @PostMapping("/url/whitelist/remove")
     public ResponseEntity<?> removeWhiteList(@RequestBody String regexUrl) {
         boolean result = squidFileRepo.removeWhiteList(regexUrl);
         FileSerializer.writeConfiguration(squidFileRepo);
         return result ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/whitelist/flush")
+    @DeleteMapping("/url/whitelist/flush")
     public ResponseEntity<?> flushWhiteList() {
         squidFileRepo.getWhiteListUrl().clear();
         FileSerializer.writeConfiguration(squidFileRepo);
