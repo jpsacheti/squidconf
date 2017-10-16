@@ -16,7 +16,7 @@ import static java.text.MessageFormat.format;
 
 @SuppressWarnings("SpellCheckingInspection")
 public class FileSerializer {
-    private static final Path SQUID_CONF_PATH = Paths.get("etc", "squid", "squid.conf");
+    private static final Path SQUID_CONF_PATH = Paths.get("/", "etc", "squid", "squid.conf");
 
     private FileSerializer() {
     }
@@ -28,7 +28,7 @@ public class FileSerializer {
             printer.println("http_port 3128");
             printer.println("visible_hostname proxy.joaopedro.com.br");
             CacheSize cache = squidFileRepo.getCacheSize().orElse(new CacheSize(128, 16));
-            printer.println(format("cache_mem {0} MB", cache.getMemoryCacheSize()));
+            printer.println(format("cache_mem {0} MB", cache.getDiskCacheSize()));
             printer.println(format("maximum_object_size_in_memory {0} MB", cache.getMemoryCacheSize()));
             printer.println("maximum_object_size 128 MB");
             printer.println("minimum_object_size 0 KB");
@@ -68,6 +68,8 @@ public class FileSerializer {
                 DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm");
                 printer.println(String.format("acl %s time %s-%s", tr.getNome(), timeFormatter.format(tr.getBegin()), timeFormatter
                         .format(tr.getEnd())));
+                String ruleType = tr.isDeny() ? "deny" : "allow";
+                printer.println(String.format("http_access %s %s", ruleType, tr.getNome()));
             });
             printer.println("acl ext_bloq url_regex -i \"/etc/squid3/extbloq\"");
             writeBlackListUrl(squidFileRepo);
@@ -83,7 +85,7 @@ public class FileSerializer {
     }
 
     private static void writeExtensionBlock(SquidFileRepo squidFileRepo) throws IOException {
-        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid3/extbloq"),
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid/extbloq"),
                 StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))) {
             squidFileRepo.getBlackListExtension()
                     .stream()
@@ -93,13 +95,13 @@ public class FileSerializer {
     }
 
     private static void writeWhiteListUrl(SquidFileRepo squidFileRepo) throws IOException {
-        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid3/bloqueados"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))) {
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid/bloqueados"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))) {
             squidFileRepo.getWhiteListUrl().forEach(writer::println);
         }
     }
 
     private static void writeBlackListUrl(SquidFileRepo squidFileRepo) throws IOException {
-        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid3/liberados"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))) {
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid/liberados"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))) {
             squidFileRepo.getBlackListUrl().forEach(writer::println);
         }
     }

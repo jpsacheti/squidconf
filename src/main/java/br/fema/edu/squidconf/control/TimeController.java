@@ -18,26 +18,26 @@ public class TimeController {
         this.squidFileRepo = squidFileRepo;
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<?> add(TimeRule ext) {
+    @PostMapping("/addtime")
+    public ResponseEntity<?> add(@RequestBody TimeRule ext) {
         squidFileRepo.addTimeRule(ext);
         FileSerializer.writeConfiguration(squidFileRepo);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/list")
+    @GetMapping("/listtime")
     public Set<String> list() {
         return squidFileRepo.getBlackListExtension();
     }
 
-    @GetMapping("/remove/{id}")
+    @GetMapping("/removetime/{id}")
     public ResponseEntity<?> remove(@PathVariable String id) {
         boolean result = squidFileRepo.removeTimeRule(id);
         FileSerializer.writeConfiguration(squidFileRepo);
         return result ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/flush")
+    @DeleteMapping("/flushtime")
     public ResponseEntity<?> flush() {
         squidFileRepo.getTimeRules().clear();
         FileSerializer.writeConfiguration(squidFileRepo);

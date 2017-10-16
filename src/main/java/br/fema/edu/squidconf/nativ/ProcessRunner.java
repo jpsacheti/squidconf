@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 public class ProcessRunner {
@@ -19,7 +21,7 @@ public class ProcessRunner {
             Files.createFile(path);
             for (AuthUser au : users) {
                 ProcessBuilder pb = new ProcessBuilder();
-                pb.command("htpasswd -b" + path.toString() + " " + au.getUsername() + " " + au.getPassword());
+                pb.command("htpasswd", "-b", path.toString(), au.getUsername(), au.getPassword());
                 pb.start().waitFor();
 
             }
@@ -31,7 +33,8 @@ public class ProcessRunner {
     public static void reloadSquid() {
         try {
             ProcessBuilder pb = new ProcessBuilder();
-            pb.command("/etc/init.d/squid restart");
+            final List<String> comandos = Arrays.asList("service", "squid", "restart");
+            pb.command(comandos);
             final Process start = pb.start();
             start.waitFor();
         } catch (IOException | InterruptedException e) {

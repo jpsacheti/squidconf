@@ -4,14 +4,11 @@ import br.fema.edu.squidconf.serializer.FileSerializer;
 import br.fema.edu.squidconf.serializer.SquidFileRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
-@RestController("/extension")
+@RestController("/extensoes")
 public class FileExtensionController {
     private final SquidFileRepo squidFileRepo;
 
@@ -20,28 +17,28 @@ public class FileExtensionController {
         this.squidFileRepo = squidFileRepo;
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<?> add(String ext) {
+    @PostMapping("/addext")
+    public ResponseEntity<?> addExtensao(@RequestBody String ext) {
         ext = ext.startsWith("\\.") ? ext : "." + ext;
         squidFileRepo.addFileExtension(ext);
         FileSerializer.writeConfiguration(squidFileRepo);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/list")
-    public Set<String> list() {
+    @GetMapping("/listext")
+    public Set<String> listExtensao() {
         return squidFileRepo.getBlackListExtension();
     }
 
-    @PostMapping("/remove")
-    public ResponseEntity<?> remove(String fex) {
+    @PostMapping("/removeext")
+    public ResponseEntity<?> removeExtensao(@RequestBody String fex) {
         boolean result = squidFileRepo.removeFileExtension(fex);
         FileSerializer.writeConfiguration(squidFileRepo);
         return result ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/flush")
-    public ResponseEntity<?> flush() {
+    @DeleteMapping("/flushext")
+    public ResponseEntity<?> flushExtensao() {
         squidFileRepo.getBlackListExtension().clear();
         FileSerializer.writeConfiguration(squidFileRepo);
         return ResponseEntity.ok().build();

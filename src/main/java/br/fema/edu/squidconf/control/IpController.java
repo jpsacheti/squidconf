@@ -4,10 +4,7 @@ import br.fema.edu.squidconf.serializer.FileSerializer;
 import br.fema.edu.squidconf.serializer.SquidFileRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -27,7 +24,7 @@ public class IpController {
         this.squidFileRepo = squidFileRepo;
     }
 
-    @PostMapping("/blacklist/add")
+    @PostMapping("/blacklist/addip")
     public ResponseEntity<?> addBlackList(String ip) {
         if (IP_PATTERN.matcher(ip).matches()) {
             squidFileRepo.addBlacklistIp(ip);
@@ -38,13 +35,13 @@ public class IpController {
 
     }
 
-    @GetMapping("/blacklist/list")
+    @GetMapping("/blacklist/listip")
     public Set<String> listBlackList() {
         return squidFileRepo.getBlackListIp();
     }
 
-    @PostMapping("/blacklist/remove")
-    public ResponseEntity<?> removeBlackList(String ip) {
+    @PostMapping("/blacklist/removeip")
+    public ResponseEntity<?> removeBlackList(@RequestBody String ip) {
         if (IP_PATTERN.matcher(ip).matches()) {
             boolean result = squidFileRepo.removeBlacklistIp(ip);
             FileSerializer.writeConfiguration(squidFileRepo);
@@ -54,15 +51,15 @@ public class IpController {
 
     }
 
-    @DeleteMapping("/blacklist/flush")
-    public ResponseEntity<?> flushBlackList() {
+    @DeleteMapping("/blacklist/fluship")
+    public ResponseEntity<String> flushBlackList() {
         squidFileRepo.getBlackListIp().clear();
         FileSerializer.writeConfiguration(squidFileRepo);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/whitelist/add")
-    public ResponseEntity<?> addWhiteList(String ip) {
+    @PostMapping("/whitelist/addip")
+    public ResponseEntity<?> addWhiteList(@RequestBody String ip) {
         if (IP_PATTERN.matcher(ip).matches()) {
             squidFileRepo.addWhitelistIp(ip);
             FileSerializer.writeConfiguration(squidFileRepo);
@@ -72,13 +69,13 @@ public class IpController {
 
     }
 
-    @GetMapping("/whitelist/list")
+    @GetMapping("/whitelist/listip")
     public Set<String> listWhiteList() {
         return squidFileRepo.getWhiteListIp();
     }
 
-    @PostMapping("/whitelist/remove")
-    public ResponseEntity<?> removeWhiteList(String ip) {
+    @PostMapping("/whitelist/removeip")
+    public ResponseEntity<?> removeWhiteList(@RequestBody String ip) {
         if (IP_PATTERN.matcher(ip).matches()) {
             boolean result = squidFileRepo.removeWhitelistIp(ip);
             FileSerializer.writeConfiguration(squidFileRepo);
@@ -87,7 +84,7 @@ public class IpController {
         return ResponseEntity.badRequest().build();
     }
 
-    @DeleteMapping("/whitelist/flush")
+    @DeleteMapping("/whitelist/fluship")
     public ResponseEntity<?> flushWhiteList() {
         squidFileRepo.getWhiteListIp().clear();
         FileSerializer.writeConfiguration(squidFileRepo);

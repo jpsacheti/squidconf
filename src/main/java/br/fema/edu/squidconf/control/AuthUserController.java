@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@RestController("/user")
+@RestController("/usuario")
 public class AuthUserController {
     private final SquidFileRepo squidFileRepo;
 
@@ -19,14 +19,14 @@ public class AuthUserController {
         this.squidFileRepo = squidFileRepo;
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<?> add(AuthUser user) {
+    @PostMapping("/new")
+    public ResponseEntity<?> addUser(@RequestBody AuthUser user) {
         squidFileRepo.addAuthUser(user);
         FileSerializer.writeConfiguration(squidFileRepo);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public Map<Integer, String> list() {
         return squidFileRepo.getUsers()
                 .stream()

@@ -4,10 +4,7 @@ import br.fema.edu.squidconf.serializer.FileSerializer;
 import br.fema.edu.squidconf.serializer.SquidFileRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
@@ -21,7 +18,7 @@ public class UrlController {
     }
 
     @PostMapping("/blacklist/add")
-    public ResponseEntity<?> addBlackList(String regexUrl) {
+    public ResponseEntity<?> addBlackList(@RequestBody String regexUrl) {
         squidFileRepo.addBlackList(regexUrl);
         FileSerializer.writeConfiguration(squidFileRepo);
         return ResponseEntity.ok().build();
@@ -33,7 +30,7 @@ public class UrlController {
     }
 
     @PostMapping("/blacklist/remove")
-    public ResponseEntity<?> removeBlackList(String regexUrl) {
+    public ResponseEntity<?> removeBlackList(@RequestBody String regexUrl) {
         boolean result = squidFileRepo.removeBlackList(regexUrl);
         FileSerializer.writeConfiguration(squidFileRepo);
         return result ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
@@ -59,7 +56,7 @@ public class UrlController {
     }
 
     @PostMapping("/whitelist/remove")
-    public ResponseEntity<?> removeWhiteList(String regexUrl) {
+    public ResponseEntity<?> removeWhiteList(@RequestBody String regexUrl) {
         boolean result = squidFileRepo.removeWhiteList(regexUrl);
         FileSerializer.writeConfiguration(squidFileRepo);
         return result ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
