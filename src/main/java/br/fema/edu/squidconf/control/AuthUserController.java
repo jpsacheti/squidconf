@@ -27,10 +27,8 @@ public class AuthUserController {
     }
 
     @GetMapping("/user/list")
-    public Map<Integer, String> list() {
-        return squidFileRepo.getUsers()
-                .stream()
-                .collect(Collectors.toMap(AuthUser::getCodigo, AuthUser::getUsername));
+    public List<AuthUser> list() {
+        return squidFileRepo.getUsers();
     }
 
     @PostMapping("/user/remove/{codigo}")
