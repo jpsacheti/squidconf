@@ -1,10 +1,13 @@
 package br.fema.edu.squidconf.model;
 
 import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 public class AuthUser {
     private Integer codigo;
     private String username;
+    @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
 
     public Integer getCodigo() {
