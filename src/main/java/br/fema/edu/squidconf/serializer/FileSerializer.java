@@ -16,7 +16,7 @@ import static java.text.MessageFormat.format;
 
 @SuppressWarnings("SpellCheckingInspection")
 public class FileSerializer {
-    private static final Path SQUID_CONF_PATH = Paths.get("/", "etc", "squid", "squid.conf");
+    private static final Path SQUID_CONF_PATH = Paths.get("/", "etc", "squid3", "squid.conf");
 
     private FileSerializer() {
     }
@@ -34,23 +34,23 @@ public class FileSerializer {
             printer.println("minimum_object_size 0 KB");
             printer.println("cache_swap_low 90");
             printer.println("cache_swap_high 95");
-            printer.println("cache_dir ufs /var/spool/squid3 256 10 128");
-            printer.println("cache_access_log /var/log/squid/access.log");
+            printer.println("cache_dir ufs /var/spool/squid 256 10 128");
+            printer.println("cache_access_log /var/log/squid3/access.log");
             if (!squidFileRepo.getUsers().isEmpty()) {
                 ProcessRunner.writePasswords(squidFileRepo.getUsers());
                 printer.println("auth_param basic realm squid");
-                printer.println("auth_param basic program /usr/lib/squid3/basic_ncsa_auth  /etc/squid/squid_passwd");
+                printer.println("auth_param basic program /usr/lib/squid3/basic_ncsa_auth  /etc/squid3/squid_passwd");
                 printer.println("ACL AUTENTICADOS PROXY_AUTH REQUIRED");
-                printer.println("acl permitidos proxy_auth –i  \"/etc/squid/squid_passwd\"");
+                printer.println("acl permitidos proxy_auth –i  \"/etc/squid3/squid_passwd\"");
                 printer.println("http_access allow permitidos");
             }
             if (squidFileRepo.isAllowEverything()) {
                 printer.println("acl libera_geral src all");
                 printer.println("http_access allow libera_geral");
                 printer.println("acl blacklist url_regex -i ");
-                printer.println("http_access deny blacklist \"/etc/squid/bloqueados\"");
+                printer.println("http_access deny blacklist \"/etc/squid3/bloqueados\"");
             } else {
-                printer.println("acl whitelist url_regex –i \"/etc/squid/liberados\"");
+                printer.println("acl whitelist url_regex –i \"/etc/squid3/liberados\"");
                 printer.println("http_access deny all");
                 printer.println("http_access allow whitelist");
             }
@@ -85,7 +85,7 @@ public class FileSerializer {
     }
 
     private static void writeExtensionBlock(SquidFileRepo squidFileRepo) throws IOException {
-        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid/extbloq"),
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid3/extbloq"),
                 StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))) {
             squidFileRepo.getBlackListExtension()
                     .stream()
@@ -95,13 +95,13 @@ public class FileSerializer {
     }
 
     private static void writeWhiteListUrl(SquidFileRepo squidFileRepo) throws IOException {
-        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid/liberados"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))) {
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid3/liberados"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))) {
             squidFileRepo.getWhiteListUrl().forEach(writer::println);
         }
     }
 
     private static void writeBlackListUrl(SquidFileRepo squidFileRepo) throws IOException {
-        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid/bloqueados"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))) {
+        try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get("/etc/squid3/bloqueados"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE))) {
             squidFileRepo.getBlackListUrl().forEach(writer::println);
         }
     }
