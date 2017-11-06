@@ -19,7 +19,7 @@ public class IpController {
     }
 
     @PostMapping("/ip/blacklist/add")
-    public ResponseEntity<?> addBlackList(String ip) {
+    public ResponseEntity<?> addBlackList(@RequestBody String ip) {
         squidFileRepo.addBlacklistIp(ip);
         FileSerializer.writeConfiguration(squidFileRepo);
         return ResponseEntity.ok().build();

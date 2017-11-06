@@ -16,7 +16,7 @@ import static java.text.MessageFormat.format;
 
 @SuppressWarnings("SpellCheckingInspection")
 public class FileSerializer {
-    private static final Path SQUID_CONF_PATH = Paths.get("/", "etc", "squid3", "squid.conf");
+    private static final Path SQUID_CONF_PATH = Paths.get("/", "etc", "squid3", "squid3.conf");
 
     private FileSerializer() {
     }
@@ -34,14 +34,14 @@ public class FileSerializer {
             printer.println("minimum_object_size 0 KB");
             printer.println("cache_swap_low 90");
             printer.println("cache_swap_high 95");
-            printer.println("cache_dir ufs /var/spool/squid 256 10 128");
+            printer.println("cache_dir ufs /var/spool/squid3 256 10 128");
             printer.println("cache_access_log /var/log/squid3/access.log");
             if (!squidFileRepo.getUsers().isEmpty()) {
                 ProcessRunner.writePasswords(squidFileRepo.getUsers());
-                printer.println("auth_param basic realm squid");
-                printer.println("auth_param basic program /usr/lib/squid3/basic_ncsa_auth  /etc/squid3/squid_passwd");
+                printer.println("auth_param basic realm squid3");
+                printer.println("auth_param basic program /usr/lib/squid3/basic_ncsa_auth  /etc/squid3/squid3_passwd");
                 printer.println("ACL AUTENTICADOS PROXY_AUTH REQUIRED");
-                printer.println("acl permitidos proxy_auth –i  \"/etc/squid3/squid_passwd\"");
+                printer.println("acl permitidos proxy_auth –i  \"/etc/squid3/squid3_passwd\"");
                 printer.println("http_access allow permitidos");
             }
             if (squidFileRepo.isAllowEverything()) {
